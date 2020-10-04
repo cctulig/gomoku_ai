@@ -1,10 +1,12 @@
+import copy
+
 class Board(object):
     width = 15
     height = 15
     win_condition = 5
 
-    def __init__(self):
-        self.board = [[-1] * self.width for _ in range(self.height)]
+    def __init__(self, board):
+        self.board = board
 
     def open_positions(self):
         positions = []
@@ -16,3 +18,12 @@ class Board(object):
 
     def update_board(self, player, x, y):
         self.board[x][y] = player
+
+    def get_children(self, player):
+        children = []
+        for pos in self.open_positions():
+            child = (copy.deepcopy(self.board), pos[0], pos[1])
+            child[0][pos[0]][pos[1]] = player
+            children.append(child)
+        return children
+
