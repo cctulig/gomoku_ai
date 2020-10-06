@@ -4,7 +4,7 @@ from board import Board
 import sys
 
 random_agent = RandomAgent(sys.argv[1])
-board = Board([[-1] * 15 for _ in range(15)])
+board = Board([[-1] * 15 for _ in range(15)], {})
 
 initialized = False
 
