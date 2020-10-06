@@ -8,6 +8,9 @@ class Board(object):
     def __init__(self, board):
         self.board = board
 
+    def __getitem__(self):
+        return self
+
     def open_positions(self):
         positions = []
         for x in range(self.width):
