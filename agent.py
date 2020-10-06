@@ -41,41 +41,42 @@ class AlphaBetaAgent(Agent):
 
     def take_turn(self, board):
         self.timeout = time.time() + turn_length_in_seconds
-        return self.alpha_beta(board, True, -math.inf, math.inf, -1, -1, -math.inf)
+        depth_limit = 1
+        best_move = None
+        while time.time() < self.timeout:
+            best_move = self.alpha_beta(board, True, -math.inf, math.inf, -1, -1, -math.inf, 0, depth_limit)
+            depth_limit+=1
+        return best_move
 
-    def alpha_beta(self, board, maximizing_player, alpha, beta, x, y, value):
-        if (time.time() >= self.timeout):
+    def alpha_beta(self, board, maximizing_player, alpha, beta, x, y, value, depth, depth_limit):
+        if (depth > depth_limit):
             # print("Current best move: {0}, {1}".format(fl.convert_num_to_alphabet(x), y + 1))
             # print("Value of this move: {0}".format(value))
             # print("Time left: {0}".format(int(self.timeout - time.time())))
-            return (board, x, y, value)
+            return value
         if maximizing_player:
             children = self.get_children(board, self.player)
-            val = list((board, x, y, -math.inf))
+            val = [board,[], -math.inf]
             for child in children:
-                currentmove = self.alpha_beta(child[0], False, alpha, beta, child[1], child[2], child[3])
-                if (currentmove[3] > val[3]):
-                    val[0] = currentmove[0]
-                    val[1] = currentmove[1]
-                    val[2] = currentmove[2]
-                    val[3] = max(val[3], currentmove[3])
-                if val[3] >= beta:
+                currentmove = self.alpha_beta(child[0], False, alpha, beta, child[1], child[2], child[3], depth+1, depth_limit)
+                if (currentmove[2] > val[2]):
+                    currentmove[1] = val[1] + [x, y]
+                    val = currentmove
+                if val[2] >= beta:
                     return val
-                alpha = max(val[3], alpha)
+                alpha = max(val[2], alpha)
             return val
         else:
             children = self.get_children(board, int(not self.player))
-            val = list((board, x, y, math.inf))
+            val = [board,[], math.inf]
             for child in children:
-                currentmove = self.alpha_beta(child[0], True, alpha, beta, child[1], child[2], child[3])
-                if (currentmove[3] < val[3]):
-                    val[0] = currentmove[0]
-                    val[1] = currentmove[1]
-                    val[2] = currentmove[2]
-                    val[3] = min(val[3], currentmove[3])
-                if val[3] <= alpha:
+                currentmove = self.alpha_beta(child[0], True, alpha, beta, child[1], child[2], child[3], depth+1, depth_limit)
+                if (currentmove[2] < val[2]):
+                    currentmove[1] = val[1] + [[x,y]]
+                    val = currentmove
+                if val[2] <= alpha:
                     return val
-                beta = min(val[3], beta)
+                beta = min(val[2], beta)
             return val
 
     def get_children(self, board, player):
