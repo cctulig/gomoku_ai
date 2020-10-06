@@ -2,11 +2,23 @@ import file_logic as fl
 from agent import RandomAgent
 from agent import AlphaBetaAgent
 from board import Board
+import copy
 import sys
+
+initial_patterns = {
+    "00000": 0,
+    "-10000-1": 0,
+    "-100001": 0,
+    "-1000-1": 0,
+    "-10001": 0,
+    "-100-1": 0,
+    "-1001": 0,
+    "-101": 0
+}
 
 random_agent = RandomAgent(sys.argv[1])
 alphabeta_agent = AlphaBetaAgent(sys.argv[1])
-board = Board([[-1] * 15 for _ in range(15)])
+board = Board([[-1] * 15 for _ in range(15)], initial_patterns, copy.deepcopy(initial_patterns))
 
 initialized = False
 
@@ -33,7 +45,7 @@ while fl.wait_for_file(fl.endFilePath):
 
     print("Deciding...")
     move = alphabeta_agent.take_turn(board)
-    print("Placing piece in: {0}, {1}".format(fl.convert_num_to_alphabet(move[1]), move[2] + 1))
+    print("Placing piece in: {0}, {1}, with value {2}".format(fl.convert_num_to_alphabet(move[1]), move[2] + 1, move[3]))
     board.update_board(alphabeta_agent.player, move[1], move[2])
     moveFile = open(fl.moveFilePath, "w")
     moveFile.write("{0} {1} {2}".format(alphabeta_agent.name, fl.convert_num_to_alphabet(move[1]), move[2] + 1))
