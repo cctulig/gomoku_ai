@@ -49,7 +49,7 @@ class AlphaBetaAgent(Agent):
             # print("Value of this move: {0}".format(value))
             # print("Time left: {0}".format(int(self.timeout - time.time())))
             return (board, x, y, value)
-        elif maximizing_player:
+        if maximizing_player:
             children = self.get_children(board, self.player)
             val = list((board, x, y, -math.inf))
             for child in children:
@@ -99,6 +99,7 @@ class AlphaBetaAgent(Agent):
         for key in self.heuristic_patterns:
             value += patterns[player][key] * self.heuristic_patterns[key]
             value -= patterns[int(not player)][key] * self.heuristic_patterns[key]
+        print(value)
         return value
 
 

@@ -35,8 +35,10 @@ class Board(object):
 
     def update_board(self, player, x, y):
         self.subtract_patterns(self.find_patterns(player, x, y), player)
+        # self.subtract_patterns(self.find_patterns(int(not player), x, y), int(not player))
         self.board[x][y] = player
         self.add_patterns(self.find_patterns(player, x, y), player)
+        # self.add_patterns(self.find_patterns(int(not player), x, y), int(not player))
 
     def subtract_patterns(self, patterns, player):
         for pattern in patterns:
@@ -48,16 +50,21 @@ class Board(object):
 
     def add_patterns(self, patterns, player):
         for pattern in patterns:
-            key = [player, get_key(pattern)]
-            self.patterns[key] = self.patterns[key] + 1
+            key = get_key(pattern)
+            if player == 0:
+                self.patterns0[key] = self.patterns0[key] + 1
+            else:
+                self.patterns1[key] = self.patterns1[key] + 1
 
     def find_patterns(self, player, x, y):
         found_patterns = []
         for index, theta in enumerate(self.cardinal_directions):
-            pattern = []
-            for radius in range(5):
+            pattern = [self.board[x][y]]
+            for radius in range(1, 5):
                 pos = [x + round(math.cos(theta)) * radius, y + round(math.sin(theta)) * radius]
-                if self.out_of_bounds(pos) or self.opposing_player(pos, player):
+                if self.out_of_bounds(pos):
+                    break
+                elif self.opposing_player(pos, player):
                     pattern.append(1)
                     break
                 elif self.blank(pos):
@@ -73,20 +80,18 @@ class Board(object):
                 found_patterns.append(pattern)
         valid_patterns = []
         for pattern in found_patterns:
-            print(pattern)
             if pattern in self.available_patterns:
-                print("found valid pattern!")
                 valid_patterns.append(pattern)
         return valid_patterns
 
     def out_of_bounds(self, pos):
-        return 0 <= pos[0] < self.width and 0 <= pos[1] < self.height
+        return not (0 <= pos[0] < self.width and 0 <= pos[1] < self.height)
 
     def opposing_player(self, pos, player):
-        return self.board[pos[0], pos[1]] == int(not player)
+        return self.board[pos[0]][pos[1]] == int(not player)
 
     def blank(self, pos):
-        return self.board[pos[0], pos[1]] == -1
+        return self.board[pos[0]][pos[1]] == -1
 
     def get_children(self, player):
         children = []
