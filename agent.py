@@ -46,7 +46,8 @@ class AlphaBetaAgent(Agent):
         while time.time() < self.timeout:
             best_move = self.alpha_beta(board, True, -math.inf, math.inf, -1, -1, -math.inf, 0, depth_limit)
             depth_limit+=1
-        return best_move
+        formatted_move = [best_move[0], best_move[1][0][0], best_move[1][0][1], best_move[3]]
+        return formatted_move
 
     def alpha_beta(self, board, maximizing_player, alpha, beta, x, y, value, depth, depth_limit):
         if (depth > depth_limit):
