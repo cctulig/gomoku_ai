@@ -1,5 +1,5 @@
 import file_logic as fl
-from agent import RandomAgent
+from agent import RandomAgent, Agent
 from agent import AlphaBetaAgent
 from board import Board
 import copy
@@ -27,8 +27,15 @@ initial_patterns1 = {
     "-110": 0
 }
 
+agent: Agent
 random_agent = RandomAgent(sys.argv[1])
 alphabeta_agent = AlphaBetaAgent(sys.argv[1])
+
+if sys.argv[2] == "random":
+    agent = random_agent
+else:
+    agent = alphabeta_agent
+
 board = Board([[-1] * 15 for _ in range(15)], initial_patterns0, initial_patterns1)
 
 initialized = False
@@ -43,23 +50,23 @@ while fl.wait_for_file(fl.endFilePath):
         initialized = True
         readMove = moveFile.read()
         if len(readMove) > 0:
-            alphabeta_agent.player = 1
+            agent.player = 1
             print("Reading opponent's move")
-            readGo = fl.interpret_move(readMove, int(not alphabeta_agent.player))
+            readGo = fl.interpret_move(readMove, int(not agent.player))
             board.update_board(readGo[0], readGo[1], readGo[2])
         else:
-            alphabeta_agent.player = 0
+            agent.player = 0
     else:
         print("Reading opponent's move")
-        readGo = fl.interpret_move(moveFile.read(), int(not alphabeta_agent.player))
+        readGo = fl.interpret_move(moveFile.read(), int(not agent.player))
         board.update_board(readGo[0], readGo[1], readGo[2])
 
     print("Deciding...")
-    move = alphabeta_agent.take_turn(board)
+    move = agent.take_turn(board)
     print("Placing piece in: {0}, {1}, with value {2}".format(fl.convert_num_to_alphabet(move[1]), move[2] + 1, move[3]))
-    board.update_board(alphabeta_agent.player, move[1], move[2])
+    board.update_board(agent.player, move[1], move[2])
     moveFile = open(fl.moveFilePath, "w")
-    moveFile.write("{0} {1} {2}".format(alphabeta_agent.name, fl.convert_num_to_alphabet(move[1]), move[2] + 1))
+    moveFile.write("{0} {1} {2}".format(agent.name, fl.convert_num_to_alphabet(move[1]), move[2] + 1))
     moveFile.close()
     while not fl.wait_for_file(fl.goFilePath):
         if not fl.wait_for_file(fl.endFilePath):

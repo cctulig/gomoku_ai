@@ -22,7 +22,8 @@ class Agent(object):
 
 class RandomAgent(Agent):
     def take_turn(self, board):
-        return random.choice(board.open_positions())
+        random_pos = random.choice(board.open_positions())
+        return [None, random_pos[0], random_pos[1], None]
 
 
 class AlphaBetaAgent(Agent):
@@ -123,7 +124,6 @@ class AlphaBetaAgent(Agent):
         patterns = board.get_patterns()
         for key in self.heuristic_patterns[player]:
             value += patterns[player][key] * self.heuristic_patterns[player][key]
-        print(value)
         for key in self.heuristic_patterns[int(not player)]:
             value -= patterns[int(not player)][key] * self.heuristic_patterns[int(not player)][key]
         print(value)

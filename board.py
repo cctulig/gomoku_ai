@@ -62,9 +62,7 @@ class Board(object):
             pattern = [self.board[x][y]]
             for radius in range(1, 5):
                 pos = [x + round(math.cos(theta)) * radius, y + round(math.sin(theta)) * radius]
-                if self.out_of_bounds(pos):
-                    break
-                elif self.opposing_player(pos, player):
+                if self.out_of_bounds(pos) or self.opposing_player(pos, player):
                     pattern.append(int(not player))
                     break
                 elif self.blank(pos):
@@ -72,10 +70,13 @@ class Board(object):
                     break
                 else:
                     pattern.append(player)
-            if index > 3 and pattern[0] == 0:
-                pattern.remove(0)
+            if index > 3 and pattern[0] == player:
+                pattern.remove(player)
+                pattern.reverse()
                 for value in pattern:
                     found_patterns[index - 4].append(value)
+                    if len(found_patterns[index - 4]) >= 7:
+                        found_patterns[index - 4] = [player, player, player, player, player]
             else:
                 found_patterns.append(pattern)
         valid_patterns = []
