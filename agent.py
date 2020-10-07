@@ -79,12 +79,15 @@ class AlphaBetaAgent(Agent):
             return value
         if maximizing_player:
             children = self.get_children(value[0], self.player)
-            val = [value[0], [], -math.inf]
+            val = [value[0], [], -math.inf,0]
             for child in children:
+                child[3] = depth+1
                 current_move = self.alpha_beta(False, alpha, beta, child, depth + 1, depth_limit)
                 if len(current_move) == 0:
                     return current_move
                 if current_move[2] > val[2]:
+                    if val[3] == child[3]:
+                        val[2]== val[2][:-1]
                     current_move[1] = val[1] + child[1]
                     val = current_move
                 if val[2] >= beta:
@@ -93,12 +96,15 @@ class AlphaBetaAgent(Agent):
             return val
         else:
             children = self.get_children(value[0], int(not self.player))
-            val = [value[0], [], math.inf]
+            val = [value[0], [], math.inf, 0]
             for child in children:
+                child[3] = depth+1
                 current_move = self.alpha_beta(True, alpha, beta, child, depth + 1, depth_limit)
                 if len(current_move) == 0:
                     return current_move
                 if current_move[2] < val[2]:
+                    if val[3] == child[3]:
+                        val[2]== val[2][:-1]
                     current_move[1] = val[1] + child[1]
                     val = current_move
                 if val[2] <= alpha:
