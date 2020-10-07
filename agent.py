@@ -57,17 +57,19 @@ class AlphaBetaAgent(Agent):
         depth_limit = 1
         best_move: list = []
         while True:
-            current_move = self.alpha_beta(board, True, -math.inf, math.inf, [board, [], -math.inf], 0, depth_limit)
+            current_move = self.alpha_beta(True, -math.inf, math.inf, [board, [], -math.inf], 0, depth_limit)
             if len(current_move) == 0:
                 break
             best_move = current_move
+            if best_move[2] >= 10000000000:
+                break
             print(best_move)
             depth_limit += 1
         print(best_move)
         formatted_move = [best_move[0], best_move[1][0][0], best_move[1][0][1], best_move[2]]
         return formatted_move
 
-    def alpha_beta(self, board, maximizing_player, alpha, beta, value, depth, depth_limit):
+    def alpha_beta(self, maximizing_player, alpha, beta, value, depth, depth_limit):
         if time.time() > self.timeout:
             return []
         if depth > depth_limit:
@@ -76,10 +78,10 @@ class AlphaBetaAgent(Agent):
             # print("Time left: {0}".format(int(self.timeout - time.time())))
             return value
         if maximizing_player:
-            children = self.get_children(board, self.player)
-            val = [board, [], -math.inf]
+            children = self.get_children(value[0], self.player)
+            val = [value[0], [], -math.inf]
             for child in children:
-                current_move = self.alpha_beta(child[0], False, alpha, beta, child, depth + 1, depth_limit)
+                current_move = self.alpha_beta(False, alpha, beta, child, depth + 1, depth_limit)
                 if len(current_move) == 0:
                     return current_move
                 if current_move[2] > val[2]:
@@ -90,10 +92,10 @@ class AlphaBetaAgent(Agent):
                 alpha = max(val[2], alpha)
             return val
         else:
-            children = self.get_children(board, int(not self.player))
-            val = [board, [], math.inf]
+            children = self.get_children(value[0], int(not self.player))
+            val = [value[0], [], math.inf]
             for child in children:
-                current_move = self.alpha_beta(child[0], True, alpha, beta, child, depth + 1, depth_limit)
+                current_move = self.alpha_beta(True, alpha, beta, child, depth + 1, depth_limit)
                 if len(current_move) == 0:
                     return current_move
                 if current_move[2] < val[2]:
@@ -126,7 +128,6 @@ class AlphaBetaAgent(Agent):
             value += patterns[player][key] * self.heuristic_patterns[player][key]
         for key in self.heuristic_patterns[int(not player)]:
             value -= patterns[int(not player)][key] * self.heuristic_patterns[int(not player)][key]
-        print(value)
         return value
 
 

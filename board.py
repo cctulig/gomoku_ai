@@ -60,7 +60,7 @@ class Board(object):
         found_patterns = []
         for index, theta in enumerate(self.cardinal_directions):
             pattern = [self.board[x][y]]
-            for radius in range(1, 5):
+            for radius in range(1, 6):
                 pos = [x + round(math.cos(theta)) * radius, y + round(math.sin(theta)) * radius]
                 if self.out_of_bounds(pos) or self.opposing_player(pos, player):
                     pattern.append(int(not player))
