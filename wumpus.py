@@ -54,17 +54,20 @@ while fl.wait_for_file(fl.endFilePath):
             print("Reading opponent's move")
             readGo = fl.interpret_move(readMove, int(not agent.player))
             board.update_board(readGo[0], readGo[1], readGo[2])
+            print(board.patterns1)
         else:
             agent.player = 0
     else:
         print("Reading opponent's move")
         readGo = fl.interpret_move(moveFile.read(), int(not agent.player))
         board.update_board(readGo[0], readGo[1], readGo[2])
+        print(board.get_patterns()[readGo[0]])
 
     print("Deciding...")
     move = agent.take_turn(board)
     print("Placing piece in: {0}, {1}, with value {2}".format(fl.convert_num_to_alphabet(move[1]), move[2] + 1, move[3]))
     board.update_board(agent.player, move[1], move[2])
+    print(board.get_patterns()[agent.player])
     moveFile = open(fl.moveFilePath, "w")
     moveFile.write("{0} {1} {2}".format(agent.name, fl.convert_num_to_alphabet(move[1]), move[2] + 1))
     moveFile.close()

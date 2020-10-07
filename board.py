@@ -44,17 +44,17 @@ class Board(object):
         for pattern in patterns:
             key = get_key(pattern)
             if self.get_pattern_player(pattern) == 0:
-                self.patterns0[key] = self.patterns0[key] - 1
+                self.patterns0[key] -= 1
             else:
-                self.patterns1[key] = self.patterns1[key] - 1
+                self.patterns1[key] -= 1
 
     def add_patterns(self, patterns):
         for pattern in patterns:
             key = get_key(pattern)
             if self.get_pattern_player(pattern) == 0:
-                self.patterns0[key] = self.patterns0[key] + 1
+                self.patterns0[key] += 1
             else:
-                self.patterns1[key] = self.patterns1[key] + 1
+                self.patterns1[key] += 1
 
     def find_patterns(self, player, x, y):
         found_patterns = []
@@ -72,9 +72,8 @@ class Board(object):
                     pattern.append(player)
             if index > 3 and pattern[0] == player:
                 pattern.remove(player)
-                pattern.reverse()
                 for value in pattern:
-                    found_patterns[index - 4].append(value)
+                    found_patterns[index - 4].insert(0, value)
                     if len(found_patterns[index - 4]) >= 7:
                         found_patterns[index - 4] = [player, player, player, player, player]
             else:
@@ -83,6 +82,10 @@ class Board(object):
         for pattern in found_patterns:
             if pattern in self.available_patterns:
                 valid_patterns.append(pattern)
+            else:
+                pattern.reverse()
+                if pattern in self.available_patterns:
+                    valid_patterns.append(pattern)
         return valid_patterns
 
     def out_of_bounds(self, pos):

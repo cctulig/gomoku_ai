@@ -78,44 +78,38 @@ class AlphaBetaAgent(Agent):
             # print("Time left: {0}".format(int(self.timeout - time.time())))
             return value
         if maximizing_player:
-            children = self.get_children(value[0], self.player)
-            val = [value[0], [], -math.inf,0]
+            children = self.get_children(value[0], self.player, value[1])
+            val = [value[0], [], -math.inf, 0]
             for child in children:
-                child[3] = depth+1
                 current_move = self.alpha_beta(False, alpha, beta, child, depth + 1, depth_limit)
                 if len(current_move) == 0:
                     return current_move
                 if current_move[2] > val[2]:
-                    if val[3] == child[3]:
-                        val[2]== val[2][:-1]
-                    current_move[1] = val[1] + child[1]
                     val = current_move
                 if val[2] >= beta:
                     return val
                 alpha = max(val[2], alpha)
             return val
         else:
-            children = self.get_children(value[0], int(not self.player))
+            children = self.get_children(value[0], int(not self.player), value[1])
             val = [value[0], [], math.inf, 0]
             for child in children:
-                child[3] = depth+1
                 current_move = self.alpha_beta(True, alpha, beta, child, depth + 1, depth_limit)
                 if len(current_move) == 0:
                     return current_move
                 if current_move[2] < val[2]:
-                    if val[3] == child[3]:
-                        val[2]== val[2][:-1]
-                    current_move[1] = val[1] + child[1]
                     val = current_move
                 if val[2] <= alpha:
                     return val
                 beta = min(val[2], beta)
             return val
 
-    def get_children(self, board, player):
+    def get_children(self, board, player, path: list):
         children = []
         for pos in board.open_positions():
-            child = [copy.deepcopy(board), [[pos[0], pos[1]]], 0]
+            new_path = copy.deepcopy(path)
+            new_path.append(pos)
+            child = [copy.deepcopy(board), new_path, 0]
             child[0].update_board(self.player, pos[0], pos[1])
             child[2] = self.get_value(child[0], player)
             if len(children) < self.max_branches:
