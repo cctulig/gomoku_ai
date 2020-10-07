@@ -37,8 +37,10 @@ class Board(object):
 
     def update_board(self, player, x, y):
         self.subtract_patterns(self.find_patterns(player, x, y))
+        self.subtract_patterns(self.find_patterns(int(not player), x, y))
         self.board[x][y] = player
         self.add_patterns(self.find_patterns(player, x, y))
+        self.add_patterns(self.find_patterns(int(not player), x, y))
 
     def subtract_patterns(self, patterns):
         for pattern in patterns:
@@ -110,3 +112,6 @@ class Board(object):
 
     def get_pattern_player(self, pattern):
         return pattern[round((len(pattern)-1)/2)]
+
+    def winning_pattern_exists(self):
+        return self.patterns0['00000'] > 0 or self.patterns1['11111'] > 0
