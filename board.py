@@ -14,7 +14,9 @@ class Board(object):
     height = 15
     win_condition = 5
     available_patterns = [[0, 0, 0, 0, 0], [-1, 0, 0, 0, 0, -1], [-1, 0, 0, 0, 0, 1], [-1, 0, 0, 0, -1],
-                          [-1, 0, 0, 0, 1], [-1, 0, 0, -1], [-1, 0, 0, 1], [-1, 0, 1]]
+                          [-1, 0, 0, 0, 1], [-1, 0, 0, -1], [-1, 0, 0, 1], [-1, 0, 1], [1, 1, 1, 1, 1],
+                          [-1, 1, 1, 1, 1, -1], [-1, 1, 1, 1, 1, 0], [-1, 1, 1, 1, -1],
+                          [-1, 1, 1, 1, 0], [-1, 1, 1, -1], [-1, 1, 1, 0], [-1, 1, 0]]
     cardinal_directions = [0, .785, 1.571, 2.356, 3.142, 3.927, 4.712, 5.498]
 
     def __init__(self, board: list, patterns0: dict, patterns1: dict):
@@ -34,24 +36,22 @@ class Board(object):
         return positions
 
     def update_board(self, player, x, y):
-        self.subtract_patterns(self.find_patterns(player, x, y), player)
-        # self.subtract_patterns(self.find_patterns(int(not player), x, y), int(not player))
+        self.subtract_patterns(self.find_patterns(player, x, y))
         self.board[x][y] = player
-        self.add_patterns(self.find_patterns(player, x, y), player)
-        # self.add_patterns(self.find_patterns(int(not player), x, y), int(not player))
+        self.add_patterns(self.find_patterns(player, x, y))
 
-    def subtract_patterns(self, patterns, player):
+    def subtract_patterns(self, patterns):
         for pattern in patterns:
             key = get_key(pattern)
-            if player == 0:
+            if self.get_pattern_player(pattern) == 0:
                 self.patterns0[key] = self.patterns0[key] - 1
             else:
                 self.patterns1[key] = self.patterns1[key] - 1
 
-    def add_patterns(self, patterns, player):
+    def add_patterns(self, patterns):
         for pattern in patterns:
             key = get_key(pattern)
-            if player == 0:
+            if self.get_pattern_player(pattern) == 0:
                 self.patterns0[key] = self.patterns0[key] + 1
             else:
                 self.patterns1[key] = self.patterns1[key] + 1
@@ -65,13 +65,13 @@ class Board(object):
                 if self.out_of_bounds(pos):
                     break
                 elif self.opposing_player(pos, player):
-                    pattern.append(1)
+                    pattern.append(int(not player))
                     break
                 elif self.blank(pos):
                     pattern.append(-1)
                     break
                 else:
-                    pattern.append(0)
+                    pattern.append(player)
             if index > 3 and pattern[0] == 0:
                 pattern.remove(0)
                 for value in pattern:
@@ -103,3 +103,6 @@ class Board(object):
 
     def get_patterns(self):
         return [self.patterns0, self.patterns1]
+
+    def get_pattern_player(self, pattern):
+        return pattern[round((len(pattern)-1)/2)]

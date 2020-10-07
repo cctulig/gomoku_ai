@@ -5,7 +5,7 @@ from board import Board
 import copy
 import sys
 
-initial_patterns = {
+initial_patterns0 = {
     "00000": 0,
     "-10000-1": 0,
     "-100001": 0,
@@ -16,9 +16,20 @@ initial_patterns = {
     "-101": 0
 }
 
+initial_patterns1 = {
+    "11111": 0,
+    "-11111-1": 0,
+    "-111110": 0,
+    "-1111-1": 0,
+    "-11110": 0,
+    "-111-1": 0,
+    "-1110": 0,
+    "-110": 0
+}
+
 random_agent = RandomAgent(sys.argv[1])
 alphabeta_agent = AlphaBetaAgent(sys.argv[1])
-board = Board([[-1] * 15 for _ in range(15)], initial_patterns, copy.deepcopy(initial_patterns))
+board = Board([[-1] * 15 for _ in range(15)], initial_patterns0, initial_patterns1)
 
 initialized = False
 
