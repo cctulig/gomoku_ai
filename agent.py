@@ -2,9 +2,7 @@ import random
 import copy
 import math
 import time
-import file_logic as fl
 from random import seed
-from random import randint
 
 turn_length_in_seconds = 9.7
 
@@ -22,33 +20,33 @@ class Agent(object):
 
 class RandomAgent(Agent):
     def take_turn(self, board):
-        random_pos = random.choice(board.open_positions())
+        random_pos = random.choice(board.all_open_positions())
         return [None, random_pos[0], random_pos[1], None]
 
 
 class AlphaBetaAgent(Agent):
-    max_branches = 5
+    max_branches = 8
 
     heuristic_patterns = [
         {
-            "00000": 10000000000,
+            "00000": 10000000,
             "-10000-1": 10000,
-            "-100001": 5000,
-            "-1000-1": 100,
-            "-10001": 50,
+            "-100001": 100,
+            "-1000-1": 1000,
+            "-10001": 0,
             "-100-1": 10,
-            "-1001": 5,
-            "-101": 1
+            "-1001": 0,
+            "-101": 0
         },
         {
-            "11111": 10000000000,
+            "11111": 10000000,
             "-11111-1": 10000,
-            "-111110": 5000,
-            "-1111-1": 100,
-            "-11110": 50,
+            "-111110": 100,
+            "-1111-1": 1000,
+            "-11110": 0,
             "-111-1": 10,
-            "-1110": 5,
-            "-110": 1
+            "-1110": 0,
+            "-110": 0
         }
     ]
 
@@ -61,7 +59,7 @@ class AlphaBetaAgent(Agent):
             if len(current_move) == 0:
                 break
             best_move = current_move
-            print(best_move)
+            # print(best_move)
             depth_limit += 1
         formatted_move = [best_move[0], best_move[1][0][0], best_move[1][0][1], best_move[2]]
         return formatted_move
@@ -70,11 +68,6 @@ class AlphaBetaAgent(Agent):
         if time.time() > self.timeout:
             return []
         if depth > depth_limit or value[0].winning_pattern_exists():
-            # print("Current best move: {0}, {1}".format(fl.convert_num_to_alphabet(x), y + 1))
-            # print("Value of this move: {0}".format(value))
-            # print("Time left: {0}".format(int(self.timeout - time.time())))
-            value[2] = int(value[2] * 1 / depth)
-            # print('found max depth or winner: {0} at {1}'.format(value[2], depth))
             return value
         if maximizing_player:
             children = self.get_children(value[0], self.player, value[1])
@@ -106,7 +99,7 @@ class AlphaBetaAgent(Agent):
 
     def get_children(self, board, player, path: list):
         children = []
-        for pos in board.open_positions():
+        for pos in board.reduced_open_positions():
             new_path = copy.deepcopy(path)
             new_path.append(pos)
             child = [copy.deepcopy(board), new_path, 0]

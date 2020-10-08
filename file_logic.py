@@ -1,11 +1,10 @@
 from pathlib import Path
 import sys
-from agent import Agent
 
 global goFilePath, endFilePath, moveFilePath
-goFilePath = Path('../Gomoku-referee-CS4341-A20/gomoku/{0}.go'.format(sys.argv[1]))
-moveFilePath = Path('../Gomoku-referee-CS4341-A20/gomoku/move_file')
-endFilePath = Path('../Gomoku-referee-CS4341-A20/gomoku/end_game')
+goFilePath = Path('./{0}.go'.format(sys.argv[1]))
+moveFilePath = Path('./move_file')
+endFilePath = Path('./end_game')
 
 
 def wait_for_file(file):

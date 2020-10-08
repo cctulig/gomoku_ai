@@ -19,15 +19,16 @@ class Board(object):
                           [-1, 1, 1, 1, 0], [-1, 1, 1, -1], [-1, 1, 1, 0], [-1, 1, 0]]
     cardinal_directions = [0, .785, 1.571, 2.356, 3.142, 3.927, 4.712, 5.498]
 
-    def __init__(self, board: list, patterns0: dict, patterns1: dict):
+    def __init__(self, board: list, open_positions: list, patterns0: dict, patterns1: dict):
         self.board = board
         self.patterns0 = patterns0
         self.patterns1 = patterns1
+        self.open_positions = open_positions
 
     def __getitem__(self):
         return self
 
-    def open_positions(self):
+    def all_open_positions(self):
         positions = []
         for x in range(self.width):
             for y in range(self.height):
@@ -35,10 +36,14 @@ class Board(object):
                     positions.append((x, y))
         return positions
 
+    def reduced_open_positions(self):
+        return self.open_positions
+
     def update_board(self, player, x, y):
         self.subtract_patterns(self.find_patterns(player, x, y))
         self.subtract_patterns(self.find_patterns(int(not player), x, y))
         self.board[x][y] = player
+        self.update_open_positions([x, y])
         self.add_patterns(self.find_patterns(player, x, y))
         self.add_patterns(self.find_patterns(int(not player), x, y))
 
@@ -57,6 +62,14 @@ class Board(object):
                 self.patterns0[key] += 1
             else:
                 self.patterns1[key] += 1
+
+    def update_open_positions(self, pos):
+        self.open_positions.remove(pos)
+        for x in range(-1, 2):
+            for y in range(-1, 2):
+                new_pos = [pos[x] + x, pos[y] + y]
+                if not self.out_of_bounds(new_pos) and self.blank(new_pos) and new_pos not in self.open_positions:
+                    self.open_positions.append(new_pos)
 
     def find_patterns(self, player, x, y):
         found_patterns = []
