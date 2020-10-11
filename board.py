@@ -64,10 +64,11 @@ class Board(object):
                 self.patterns1[key] += 1
 
     def update_open_positions(self, pos):
-        self.open_positions.remove(pos)
+        if pos in self.open_positions:
+            self.open_positions.remove(pos)
         for x in range(-1, 2):
             for y in range(-1, 2):
-                new_pos = [pos[x] + x, pos[y] + y]
+                new_pos = [pos[0] + x, pos[1] + y]
                 if not self.out_of_bounds(new_pos) and self.blank(new_pos) and new_pos not in self.open_positions:
                     self.open_positions.append(new_pos)
 
@@ -128,3 +129,10 @@ class Board(object):
 
     def winning_pattern_exists(self):
         return self.patterns0['00000'] > 0 or self.patterns1['11111'] > 0
+
+    def exists_four_in_row_one_side_blocked(self):
+        return self.patterns0['-100001'] > 0 or self.patterns1['-111110'] > 0
+
+    def exists_strategic_pattern(self):
+        return self.patterns0['-100001'] > 0 or self.patterns1['-111110'] > 0 or self.patterns0['-10000-1'] > 0 or self.patterns1['-11111-1'] > 0 or self.patterns0['-1000-1'] > 0 or self.patterns1['-1111-1'] > 0
+

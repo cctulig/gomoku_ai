@@ -25,7 +25,7 @@ class RandomAgent(Agent):
 
 
 class AlphaBetaAgent(Agent):
-    max_branches = 8
+    max_branches = 3
 
     heuristic_patterns = [
         {
@@ -52,14 +52,14 @@ class AlphaBetaAgent(Agent):
 
     def take_turn(self, board):
         self.timeout = time.time() + turn_length_in_seconds
-        depth_limit = 1
+        depth_limit = 0
         best_move: list = []
         while True:
             current_move = self.alpha_beta(True, -math.inf, math.inf, [board, [], -math.inf], 0, depth_limit)
-            if len(current_move) == 0:
+            if len(current_move) == 0 or len(current_move[1]) == 0:
                 break
             best_move = current_move
-            # print(best_move)
+            print(best_move)
             depth_limit += 1
         formatted_move = [best_move[0], best_move[1][0][0], best_move[1][0][1], best_move[2]]
         return formatted_move
@@ -67,10 +67,16 @@ class AlphaBetaAgent(Agent):
     def alpha_beta(self, maximizing_player, alpha, beta, value, depth, depth_limit):
         if time.time() > self.timeout:
             return []
-        if depth > depth_limit or value[0].winning_pattern_exists():
+        if value[0].winning_pattern_exists():
+            if value[2] < 0:
+                value[2] = -10000000 + depth
+            else:
+                value[2] = 10000000 - depth
+            return value
+        if depth > depth_limit:
             return value
         if maximizing_player:
-            children = self.get_children(value[0], self.player, value[1])
+            children = self.get_children(value[0], self.player, value[1], depth)
             val = [value[0], [], -math.inf, 0]
             for child in children:
                 current_move = self.alpha_beta(False, alpha, beta, child, depth + 1, depth_limit)
@@ -83,7 +89,7 @@ class AlphaBetaAgent(Agent):
                 alpha = max(val[2], alpha)
             return val
         else:
-            children = self.get_children(value[0], int(not self.player), value[1])
+            children = self.get_children(value[0], int(not self.player), value[1], depth)
             val = [value[0], [], math.inf, 0]
             for child in children:
                 current_move = self.alpha_beta(True, alpha, beta, child, depth + 1, depth_limit)
@@ -97,15 +103,18 @@ class AlphaBetaAgent(Agent):
                 beta = min(val[2], beta)
             return val
 
-    def get_children(self, board, player, path: list):
+    def get_children(self, board, player, path: list, depth):
         children = []
+        safe_children = []
         for pos in board.reduced_open_positions():
             new_path = copy.deepcopy(path)
             new_path.append(pos)
             child = [copy.deepcopy(board), new_path, 0]
             child[0].update_board(player, pos[0], pos[1])
-            child[2] = self.get_value(child[0])
-            if player == self.player:
+            child[2] = self.get_value(child[0], depth)
+            if child[0].exists_four_in_row_one_side_blocked:
+                safe_children.append(child)
+            elif player == self.player:
                 if len(children) < self.max_branches:
                     children.append(child)
                     children.sort(key=sort_heuristic)
@@ -121,9 +130,13 @@ class AlphaBetaAgent(Agent):
                     children.remove(children[0])
                     children.append(child)
                     children.sort(key=sort_heuristic, reverse=True)
+        for child in safe_children:
+            children.append(child)
+        if depth == 0:
+            print(children)
         return children
 
-    def get_value(self, board):
+    def get_value(self, board, depth):
         value = 0
         patterns = board.get_patterns()
         for key in self.heuristic_patterns[self.player]:
