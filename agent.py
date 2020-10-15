@@ -4,6 +4,8 @@ import math
 import time
 from random import seed
 
+from copier import copy_2d_list
+
 turn_length_in_seconds = 9.7
 
 
@@ -33,20 +35,20 @@ class AlphaBetaAgent(Agent):
             "-10000-1": 10000,
             "-100001": 100,
             "-1000-1": 1000,
-            "-10001": 0,
+            "-10-100-1": 800,
+            "1000-10": 100,
+            "00-100": 100,
             "-100-1": 10,
-            "-1001": 0,
-            "-101": 0
         },
         {
             "11111": 10000000,
             "-11111-1": 10000,
             "-111110": 100,
             "-1111-1": 1000,
-            "-11110": 0,
+            "-11-111-1": 800,
+            "0111-11": 100,
+            "11-111": 100,
             "-111-1": 10,
-            "-1110": 0,
-            "-110": 0
         }
     ]
 
@@ -107,12 +109,12 @@ class AlphaBetaAgent(Agent):
         children = []
         safe_children = []
         for pos in board.reduced_open_positions():
-            new_path = copy.deepcopy(path)
+            new_path = copy_2d_list(path)
             new_path.append(pos)
-            child = [copy.deepcopy(board), new_path, 0]
+            child = [board.copy(), new_path, 0]
             child[0].update_board(player, pos[0], pos[1])
             child[2] = self.get_value(child[0], depth)
-            if child[0].exists_four_in_row_one_side_blocked():
+            if child[0].exists_immediate_win(0) or child[0].exists_immediate_win(1):
                 safe_children.append(child)
             elif player == self.player:
                 if len(children) < max(self.max_branches - depth * 5, 1):

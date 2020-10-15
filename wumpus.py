@@ -2,6 +2,7 @@ import file_logic as fl
 from agent import RandomAgent, Agent
 from agent import AlphaBetaAgent
 from board import Board
+import numpy as np
 import sys
 
 initial_patterns0 = {
@@ -9,10 +10,10 @@ initial_patterns0 = {
     "-10000-1": 0,
     "-100001": 0,
     "-1000-1": 0,
-    "-10001": 0,
+    "-10-100-1": 0,
+    "1000-10": 0,
+    "00-100": 0,
     "-100-1": 0,
-    "-1001": 0,
-    "-101": 0
 }
 
 initial_patterns1 = {
@@ -20,10 +21,10 @@ initial_patterns1 = {
     "-11111-1": 0,
     "-111110": 0,
     "-1111-1": 0,
-    "-11110": 0,
+    "-11-111-1": 0,
+    "0111-11": 0,
+    "11-111": 0,
     "-111-1": 0,
-    "-1110": 0,
-    "-110": 0
 }
 
 agent: Agent
@@ -35,7 +36,7 @@ if sys.argv[2] == "random":
 else:
     agent = alphabeta_agent
 
-board = Board([[-1] * 15 for _ in range(15)], [[7, 7]], initial_patterns0, initial_patterns1)
+board = Board([-1] * 225, [[7, 7]], initial_patterns0, initial_patterns1)
 
 initialized = False
 
