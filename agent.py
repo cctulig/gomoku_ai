@@ -30,26 +30,50 @@ class AlphaBetaAgent(Agent):
     max_branches = 15
 
     heuristic_patterns = [
-        {
-            "00000": 10000000,
-            "-10000-1": 10000,
-            "-100001": 100,
-            "-1000-1": 1000,
-            "-10-100-1": 800,
-            "1000-10": 100,
-            "00-100": 100,
-            "-100-1": 10,
-        },
-        {
-            "11111": 10000000,
-            "-11111-1": 10000,
-            "-111110": 100,
-            "-1111-1": 1000,
-            "-11-111-1": 800,
-            "0111-11": 100,
-            "11-111": 100,
-            "-111-1": 10,
-        }
+        [
+            {
+                "00000": 10000000,
+                "-10000-1": 10000,
+                "-100001": 100,
+                "-1000-1": 1000,
+                "-10-100-1": 800,
+                "1000-10": 100,
+                "00-100": 100,
+                "-100-1": 10,
+            },
+            {
+                "00000": 10000000,
+                "-10000-1": 100000,
+                "-100001": 100000,
+                "-1000-1": 10001,
+                "-10-100-1": 8001,
+                "1000-10": 100000,
+                "00-100": 100000,
+                "-100-1": 101,
+            },
+        ],
+        [
+            {
+                "11111": 10000000,
+                "-11111-1": 10000,
+                "-111110": 1000,
+                "-1111-1": 1000,
+                "-11-111-1": 800,
+                "0111-11": 1000,
+                "11-111": 1000,
+                "-111-1": 100,
+            },
+            {
+                "11111": 10000000,
+                "-11111-1": 100000,
+                "-111110": 100000,
+                "-1111-1": 10001,
+                "-11-111-1": 8001,
+                "0111-11": 100000,
+                "11-111": 100000,
+                "-111-1": 101,
+            },
+        ],
     ]
 
     def take_turn(self, board):
@@ -113,7 +137,7 @@ class AlphaBetaAgent(Agent):
             new_path.append(pos)
             child = [board.copy(), new_path, 0]
             child[0].update_board(player, pos[0], pos[1])
-            child[2] = self.get_value(child[0], depth)
+            child[2] = self.get_value(child[0], player)
             if child[0].exists_immediate_win(0) or child[0].exists_immediate_win(1):
                 safe_children.append(child)
             elif player == self.player:
@@ -138,13 +162,19 @@ class AlphaBetaAgent(Agent):
             print(children)
         return children
 
-    def get_value(self, board, depth):
+    def get_value(self, board, player):
         value = 0
         patterns = board.get_patterns()
-        for key in self.heuristic_patterns[self.player]:
-            value += patterns[self.player][key] * self.heuristic_patterns[self.player][key]
-        for key in self.heuristic_patterns[int(not self.player)]:
-            value -= patterns[int(not self.player)][key] * self.heuristic_patterns[int(not self.player)][key]
+        for key in self.heuristic_patterns[self.player][0]:
+            if player == self.player:
+                value += patterns[self.player][key] * self.heuristic_patterns[self.player][0][key]
+            else:
+                value += patterns[self.player][key] * self.heuristic_patterns[self.player][1][key]
+        for key in self.heuristic_patterns[int(not self.player)][0]:
+            if player == self.player:
+                value -= patterns[int(not self.player)][key] * self.heuristic_patterns[int(not self.player)][1][key]
+            else:
+                value -= patterns[int(not self.player)][key] * self.heuristic_patterns[int(not self.player)][0][key]
         return value
 
 

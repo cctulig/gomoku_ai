@@ -206,8 +206,8 @@ class Board(object):
 
     def exists_immediate_win(self, player):
         if player == 0:
-            return self.patterns0['-100001'] > 0 or self.patterns0['1000-10'] > 0 or self.patterns0['00-100'] > 0
-        return self.patterns1['-111110'] > 0 or self.patterns1['0111-11'] > 0 or self.patterns1['11-111'] > 0
+            return self.patterns0['-100001'] > 0 or self.patterns0['1000-10'] > 0 or self.patterns0['00-100'] > 0 or self.patterns0['-100001'] or self.patterns0['-10-100-1']
+        return self.patterns1['-111110'] > 0 or self.patterns1['0111-11'] > 0 or self.patterns1['11-111'] > 0 or self.patterns1['-1111-1'] or self.patterns1['-11-111-1']
 
     def exists_strategic_pattern(self):
         return self.patterns0['-100001'] > 0 or self.patterns1['-111110'] > 0 or self.patterns0['-10000-1'] > 0 or self.patterns1['-11111-1'] > 0 or self.patterns0['-1000-1'] > 0 or self.patterns1['-1111-1'] > 0
