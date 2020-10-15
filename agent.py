@@ -25,7 +25,7 @@ class RandomAgent(Agent):
 
 
 class AlphaBetaAgent(Agent):
-    max_branches = 3
+    max_branches = 15
 
     heuristic_patterns = [
         {
@@ -112,10 +112,10 @@ class AlphaBetaAgent(Agent):
             child = [copy.deepcopy(board), new_path, 0]
             child[0].update_board(player, pos[0], pos[1])
             child[2] = self.get_value(child[0], depth)
-            if child[0].exists_four_in_row_one_side_blocked:
+            if child[0].exists_four_in_row_one_side_blocked():
                 safe_children.append(child)
             elif player == self.player:
-                if len(children) < self.max_branches:
+                if len(children) < max(self.max_branches - depth * 5, 1):
                     children.append(child)
                     children.sort(key=sort_heuristic)
                 elif child[2] > children[0][2]:
@@ -123,7 +123,7 @@ class AlphaBetaAgent(Agent):
                     children.append(child)
                     children.sort(key=sort_heuristic)
             else:
-                if len(children) < self.max_branches:
+                if len(children) < max(self.max_branches - depth * 5, 1):
                     children.append(child)
                     children.sort(key=sort_heuristic, reverse=True)
                 elif child[2] < children[0][2]:
